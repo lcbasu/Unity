@@ -11,9 +11,6 @@ public class DrawCurve : MonoBehaviour {
 	//Store points on the Catmull curve so we can visualize them
 	List<Vector3> newPoints = new List<Vector3>();
 
-	//How many points you want on the curve
-	float amountOfPoints = 10.0f;
-
 	//set from 0-1
 	public float alpha = 0.5f;
 
@@ -72,6 +69,8 @@ public class DrawCurve : MonoBehaviour {
 		float t1 = GetT(t0, p0, p1);
 		float t2 = GetT(t1, p1, p2);
 		float t3 = GetT(t2, p2, p3);
+
+		float amountOfPoints = pointsList.Count;
 
 		for(float t=t1; t<t2; t+=((t2-t1)/amountOfPoints))
 		{
