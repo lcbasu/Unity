@@ -62,7 +62,7 @@ public class DrawCurve : MonoBehaviour {
 				float rotationAngle = 45.0f;
 
 				float steps = Time.deltaTime;
-				int stepsCount = 0;
+				int stepsCount = 15;
 
 				while (steps <= rotationAngle) {
 					Debug.Log ("steps: " + steps);
@@ -75,7 +75,8 @@ public class DrawCurve : MonoBehaviour {
 					tempLine.SetVertexCount(0);
 					tempLine.SetWidth(.2f,0.2f);
 					tempLine.SetColors(Color.red, Color.red);
-					tempLine.useWorldSpace = true;
+					tempLine.useWorldSpace = true;	
+
 
 					for (int i = 0; i < allSplinePoints.Count - 1; i++) {
 						Vector3 oldPointVector = allSplinePoints [i];
@@ -83,7 +84,7 @@ public class DrawCurve : MonoBehaviour {
 						tempLine.SetPosition (i, newPointVector);
 					}
 					steps += Time.deltaTime;
-					stepsCount += 1;
+					stepsCount += 15;
 				}
 				Debug.Log ("Steps count: " + stepsCount);
 
