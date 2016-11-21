@@ -45,21 +45,15 @@ public class DrawCurve : MonoBehaviour {
 		}
 		else if(Input.GetMouseButtonUp(0)) {
 			isMousePressed = false;
-			Debug.Log ("Total number of mouse points: " + pointsList.Count);
-
 			if (pointsList.Count >= 4) {
 				pointsList.Add (pointsList [0]);
 				pointsList.Add (pointsList [1]);
 				pointsList.Add (pointsList [2]);
-				Debug.Log ("[NEW]Total number of mouse points: " + pointsList.Count);
 
 				// Drawing Catmull curve between all the points
 				for (int i = 0; i < pointsList.Count - 3; i++) { // only  run the loop till (count - 4) element 
 					addPointsOnCatmullCurve (pointsList [i], pointsList [i + 1], pointsList [i + 2], pointsList [i + 3]);
 				}
-				Debug.Log ("Total number of spline points: " + allSplinePoints.Count);
-				allSplinePoints.Add (pointsList [pointsList.Count - 2]);
-				Debug.Log ("[NEW]Total number of spline points: " + allSplinePoints.Count);
 
 				line.SetVertexCount (allSplinePoints.Count - 1);
 				for (int i = 0; i < allSplinePoints.Count - 1; i++) {
