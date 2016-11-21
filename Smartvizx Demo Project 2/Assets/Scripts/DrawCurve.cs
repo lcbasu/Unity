@@ -61,6 +61,32 @@ public class DrawCurve : MonoBehaviour {
 				Vector3 rotationAxis = new Vector3 (1.0f, 1.0f, 1.0f);
 				float rotationAngle = 45.0f;
 
+				float steps = Time.deltaTime;
+				int stepsCount = 0;
+
+				while (steps <= rotationAngle) {
+					Debug.Log ("steps: " + steps);
+
+					GameObject tempGameobject = new GameObject();
+					tempGameobject.transform.parent = gameObject.transform;
+					LineRenderer tempLine;
+					tempLine = tempGameobject.AddComponent<LineRenderer>();
+					tempLine.material =  new Material(Shader.Find("Particles/Additive"));
+					tempLine.SetVertexCount(0);
+					tempLine.SetWidth(.2f,0.2f);
+					tempLine.SetColors(Color.red, Color.red);
+					tempLine.useWorldSpace = true;
+
+					for (int i = 0; i < allSplinePoints.Count - 1; i++) {
+						Vector3 oldPointVector = allSplinePoints [i];
+						Vector3 newPointVector = Quaternion.AngleAxis(rotationAngle*steps, rotationAxis) * oldPointVector;
+						tempLine.SetPosition (i, newPointVector);
+					}
+					steps += Time.deltaTime;
+					stepsCount += 1;
+				}
+				Debug.Log ("Steps count: " + stepsCount);
+
 				for (int i = 0; i < allSplinePoints.Count - 1; i++) {
 					Vector3 oldPointVector = allSplinePoints [i];
 					Vector3 newPointVector = Quaternion.AngleAxis(rotationAngle, rotationAxis) * oldPointVector;
