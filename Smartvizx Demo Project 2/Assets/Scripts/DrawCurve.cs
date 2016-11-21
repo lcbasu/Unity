@@ -16,8 +16,6 @@ public class DrawCurve : MonoBehaviour {
 	//Store all points on the Catmull curve
 	List<Vector3> allSplinePoints = new List<Vector3>();
 
-	private LineRenderer catmullSpline;
-
 	//set from 0-1
 	public float alpha = 0.5f;
 
@@ -59,6 +57,19 @@ public class DrawCurve : MonoBehaviour {
 				for (int i = 0; i < allSplinePoints.Count - 1; i++) {
 					line.SetPosition (i, allSplinePoints [i]);
 				}
+
+				Vector3 rotationAxis = new Vector3 (1.0f, 1.0f, 1.0f);
+				float rotationAngle = 45.0f;
+
+				for (int i = 0; i < allSplinePoints.Count - 1; i++) {
+					Vector3 oldPointVector = allSplinePoints [i];
+					Vector3 newPointVector = Quaternion.AngleAxis(rotationAngle, rotationAxis) * oldPointVector;
+					line.SetPosition (i, newPointVector);
+				}
+
+				// New lines for each rotation
+
+
 			} else {
 				Debug.Log ("Not enough point to draw catmull spline");
 			}
