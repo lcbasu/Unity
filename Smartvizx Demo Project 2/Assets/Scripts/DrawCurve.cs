@@ -8,6 +8,8 @@ public class DrawCurve : MonoBehaviour {
 	private List<Vector3> pointsList;
 	private Vector3 mousePos;
 
+	private int numberOfPointsBetweenSplinePoints = 10;
+
 	//Store points on the Catmull curve so we can visualize them
 	List<Vector3> newPoints = new List<Vector3>();
 
@@ -38,6 +40,7 @@ public class DrawCurve : MonoBehaviour {
 		}
 		else if(Input.GetMouseButtonUp(0)) {
 			isMousePressed = false;
+			Debug.Log ("Total number of points: " + pointsList.Count);
 			for(int i = 0; i < pointsList.Count; i++)
 			{
 				Debug.Log("pointsList: " + pointsList[i]);
@@ -45,6 +48,7 @@ public class DrawCurve : MonoBehaviour {
 			CatmulRom();
 		}
 		// Drawing line when mouse is moving(presses)
+		// The points are pushed each frame
 		if(isMousePressed) {
 			mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			mousePos.z=0;
@@ -70,7 +74,7 @@ public class DrawCurve : MonoBehaviour {
 		float t2 = GetT(t1, p1, p2);
 		float t3 = GetT(t2, p2, p3);
 
-		float amountOfPoints = pointsList.Count;
+		float amountOfPoints = numberOfPointsBetweenSplinePoints;
 
 		for(float t=t1; t<t2; t+=((t2-t1)/amountOfPoints))
 		{
