@@ -107,6 +107,35 @@ public class DrawCurve : MonoBehaviour {
 		}
 	}
 
+	Vector3 centerOfCatmullSpline() {
+		Vector3 center = new Vector3 (0.0f, 0.0f, 0.0f);
+		float minX = float.MaxValue;
+		float maxX = float.MinValue;
+		float minY = float.MaxValue;
+		float maxY = float.MinValue;
+
+		for(int i = 0; i < allSplinePoints.Count; i++) {
+			Vector3 temp = allSplinePoints [i];
+			if (temp.x > maxX) {
+				maxX = temp.x;
+			}
+			if (temp.x < minX) {
+				minX = temp.x;
+			}
+			if (temp.y > maxY) {
+				maxY = temp.y;
+			}
+			if (temp.y < minY) {
+				minY = temp.y;
+			}
+		}
+
+		center.x = (minX + maxX) / 2;
+		center.y = (minY + maxY) / 2;
+
+		return center;
+	}
+
 	void CatmulRom()
 	{
 		newPoints.Clear();
