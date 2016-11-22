@@ -19,6 +19,10 @@ public class DrawCurve : MonoBehaviour {
 	//set from 0-1
 	public float alpha = 0.5f;
 
+	private Vector3 rotationAxis = new Vector3 (1.0f, 1.0f, 1.0f);
+	private float rotationAngle = 45.0f;
+	private int steps = 5;
+
 	//	-----------------------------------	
 	void Awake() {
 		// Create line renderer component and set its property
@@ -57,33 +61,77 @@ public class DrawCurve : MonoBehaviour {
 				for (int i = 0; i < allSplinePoints.Count - 1; i++) {
 					line.SetPosition (i, allSplinePoints [i]);
 				}
+					
+//				for (int i = 0; i < allSplinePoints.Count - 1; i++) {
+//					Vector3 oldPointVector = allSplinePoints [i];
+//					Vector3 newPointVector = Quaternion.AngleAxis(rotationAngle, rotationAxis) * oldPointVector;
+//					line.SetPosition (i, newPointVector);
+//				}
+//
+				// Mesh surface
 
-				Vector3 rotationAxis = new Vector3 (1.0f, 1.0f, 1.0f);
-				float rotationAngle = 45.0f;
+				List<Vector3> pointsOnSurface = new List<Vector3>();
 
-				float steps = 1;//Time.deltaTime;
-
-				while (steps <= rotationAngle) {
-					Debug.Log ("steps: " + steps);
-					List<Vector3> tempSplinePoints = new List<Vector3>();
-					for (int i = 0; i < allSplinePoints.Count - 1; i++) {
+				for (int i = 0; i < allSplinePoints.Count; i++) {
+					pointsOnSurface.Add (allSplinePoints[i]);
+				}
+					
+				float incrementalAngle = rotationAngle/steps;//Time.deltaTime;
+				while (incrementalAngle <= rotationAngle) {
+					for (int i = 0; i < allSplinePoints.Count; i++) {
 						Vector3 oldPointVector = allSplinePoints [i];
 						Vector3 newPointVector = Quaternion.AngleAxis(rotationAngle*steps, rotationAxis) * oldPointVector;
-						tempSplinePoints.Add (newPointVector);
-						Debug.Log ("oldPointVector: " + oldPointVector);
-						Debug.Log ("newPointVector: " + newPointVector);
+						pointsOnSurface.Add (newPointVector);
 					}
-					steps += 1;//Time.deltaTime;
+					incrementalAngle += rotationAngle/steps;//Time.deltaTime;
 				}
 
-				for (int i = 0; i < allSplinePoints.Count - 1; i++) {
-					Vector3 oldPointVector = allSplinePoints [i];
-					Vector3 newPointVector = Quaternion.AngleAxis(rotationAngle, rotationAxis) * oldPointVector;
-					line.SetPosition (i, newPointVector);
+				Debug.Log ("allSplinePoints.Count: " + allSplinePoints.Count);
+				Debug.Log ("pointsOnSurface.Count: " + pointsOnSurface.Count);
+
+				// Start drawing traingles
+				gameObject.AddComponent<MeshFilter>();
+				gameObject.AddComponent<MeshRenderer>();
+				Mesh mesh = GetComponent<MeshFilter>().mesh;
+
+				mesh.Clear();
+
+//				// make changes to the Mesh by creating arrays which contain the new values
+//				mesh.vertices = new Vector3[] {new Vector3(0, 0, 0), new Vector3(0, 1, 0), new Vector3(1, 1, 0), new Vector3(1, 0, 0)};
+//				int[] triangles = {0, 1, 2, 2, 3, 0};
+//				mesh.triangles = triangles;
+
+				mesh.vertices = pointsOnSurface.ToArray();
+				List<int> triangles = new List<int>();
+
+				int totalPointOnSlpine = allSplinePoints.Count;
+				int height = 0;
+				while (height < steps) {
+					for (int i = 0; i < totalPointOnSlpine-1; i++) {
+						int index = i + totalPointOnSlpine * height;
+
+						int indexP0 = index;
+						int indexP1 = index + 1;
+						int indexP2 = index + 1 + totalPointOnSlpine;
+						int indexP3 = index + totalPointOnSlpine;
+						//					Vector3 p0 = pointsOnSurface [indexP0];
+						//					Vector3 p1 = pointsOnSurface [indexP1];
+						//					Vector3 p2 = pointsOnSurface [indexP2];
+						//					Vector3 p4 = pointsOnSurface [indexP3];
+
+						// Traingle 1
+						triangles.Add (indexP0);
+						triangles.Add (indexP1);
+						triangles.Add (indexP2);
+
+						// Triangle 2
+						triangles.Add (indexP2);
+						triangles.Add (indexP3);
+						triangles.Add (indexP0);
+					}
+					height += 1;
 				}
-
-				// New lines for each rotation
-
+				mesh.triangles = triangles.ToArray ();
 
 			} else {
 				Debug.Log ("Not enough point to draw catmull spline");
