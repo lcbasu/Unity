@@ -19,7 +19,7 @@ public class DrawCurve : MonoBehaviour {
 	//set from 0-1
 	public float alpha = 0.5f;
 
-	private Vector3 rotationAxis = new Vector3 (1.0f, 1.0f, 1.0f);
+	private Vector3 rotationAxis = new Vector3 (0.0f, 0.0f, 1.0f);
 	private float rotationAngle = 45.0f;
 	private int steps = 5;
 
@@ -114,11 +114,6 @@ public class DrawCurve : MonoBehaviour {
 						int indexP1 = index + 1;
 						int indexP2 = index + 1 + totalPointOnSlpine;
 						int indexP3 = index + totalPointOnSlpine;
-						//					Vector3 p0 = pointsOnSurface [indexP0];
-						//					Vector3 p1 = pointsOnSurface [indexP1];
-						//					Vector3 p2 = pointsOnSurface [indexP2];
-						//					Vector3 p4 = pointsOnSurface [indexP3];
-
 						// Traingle 1
 						triangles.Add (indexP0);
 						triangles.Add (indexP1);
