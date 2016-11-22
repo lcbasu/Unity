@@ -19,7 +19,7 @@ public class DrawCurve : MonoBehaviour {
 	//set from 0-1
 	public float alpha = 0.5f;
 
-	private Vector3 rotationAxis = new Vector3 (0.0f, 0.0f, 1.0f);
+	private Vector3 rotationAxis = new Vector3 (1.0f, 1.0f, 1.0f);
 	private float rotationAngle = 45.0f;
 	private int steps = 5;
 
@@ -80,7 +80,7 @@ public class DrawCurve : MonoBehaviour {
 				while (incrementalAngle <= rotationAngle) {
 					for (int i = 0; i < allSplinePoints.Count; i++) {
 						Vector3 oldPointVector = allSplinePoints [i];
-						Vector3 newPointVector = Quaternion.AngleAxis(rotationAngle*steps, rotationAxis) * oldPointVector;
+						Vector3 newPointVector = Quaternion.AngleAxis(incrementalAngle, rotationAxis) * oldPointVector;
 						pointsOnSurface.Add (newPointVector);
 					}
 					incrementalAngle += rotationAngle/steps;//Time.deltaTime;
