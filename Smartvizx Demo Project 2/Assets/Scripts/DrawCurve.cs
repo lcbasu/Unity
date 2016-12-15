@@ -4,253 +4,171 @@ using System.Collections.Generic;
 
 public class DrawCurve : MonoBehaviour {
 	private LineRenderer line;
-	private bool isMousePressed;
-	private List<Vector3> pointsList;
+    private bool isMousePressed;
 	private Vector3 mousePos;
+    private Vector3 startPoint;
+    private Vector3 endPoint;
+    private Vector3 middlePoint;
+    private List<Vector3> pointsList;
+    int count;
+    float a, b, c, d, l, m, n, k, p, D, q, r, s, x, y, z;
 
-	private int numberOfPointsBetweenSplinePoints = 10;
-
-	//Store points on the Catmull curve so we can visualize them
-	List<Vector3> newPoints = new List<Vector3>();
-
-	//Store all points on the Catmull curve
-	List<Vector3> allSplinePoints = new List<Vector3>();
-
-	//set from 0-1
-	public float alpha = 0.5f;
-
-	private Vector3 rotationAxis = new Vector3 (1.0f, 1.0f, 1.0f);
-	private float rotationAngle = 45.0f;
-	private int steps = 5;
-
-	//	-----------------------------------	
-	void Awake() {
+	//	---------------------- -------------	
+	void Awake() 
+    {
 		// Create line renderer component and set its property
 		line = gameObject.AddComponent<LineRenderer>();
 		line.material =  new Material(Shader.Find("Particles/Additive"));
 		line.SetVertexCount(0);
 		line.SetWidth(.2f,0.2f);
 		line.SetColors(Color.red, Color.red);
-		line.useWorldSpace = true;	
+		line.useWorldSpace = true;
+        pointsList = new List<Vector3>();
 		isMousePressed = false;
-		pointsList = new List<Vector3>();
+        count = 0;
 	}
 	//	-----------------------------------	
 	void Update () {
 		// If mouse button down, remove old line and set its color to green
-		if(Input.GetMouseButtonDown(0)) {
+		if(Input.GetMouseButtonDown(0)) 
+        {
 			isMousePressed = true;
-			line.SetVertexCount(0);
-			pointsList.RemoveRange(0, pointsList.Count);
-			allSplinePoints.RemoveRange(0, allSplinePoints.Count);
-			line.SetColors(Color.red, Color.red);
 		}
-		else if(Input.GetMouseButtonUp(0)) {
+		else if(Input.GetMouseButtonUp(0)) 
+        {
 			isMousePressed = false;
-			if (pointsList.Count >= 4) {
-				pointsList.Add (pointsList [0]);
-				pointsList.Add (pointsList [1]);
-				pointsList.Add (pointsList [2]);
-
-				// Drawing Catmull curve between all the points
-				for (int i = 0; i < pointsList.Count - 3; i++) { // only  run the loop till (count - 4) element 
-					addPointsOnCatmullCurve (pointsList [i], pointsList [i + 1], pointsList [i + 2], pointsList [i + 3]);
-				}
-
-				line.SetVertexCount (allSplinePoints.Count - 1);
-				for (int i = 0; i < allSplinePoints.Count - 1; i++) {
-					line.SetPosition (i, allSplinePoints [i]);
-				}
-					
-//				for (int i = 0; i < allSplinePoints.Count - 1; i++) {
-//					Vector3 oldPointVector = allSplinePoints [i];
-//					Vector3 newPointVector = Quaternion.AngleAxis(rotationAngle, rotationAxis) * oldPointVector;
-//					line.SetPosition (i, newPointVector);
-//				}
-//
-				// Mesh surface
-
-				List<Vector3> pointsOnSurface = new List<Vector3>();
-
-				for (int i = 0; i < allSplinePoints.Count; i++) {
-					pointsOnSurface.Add (allSplinePoints[i]);
-				}
-					
-				float incrementalAngle = rotationAngle/steps;//Time.deltaTime;
-				while (incrementalAngle <= rotationAngle) {
-					for (int i = 0; i < allSplinePoints.Count; i++) {
-						Vector3 oldPointVector = allSplinePoints [i];
-						Vector3 newPointVector = Quaternion.AngleAxis(incrementalAngle, rotationAxis) * oldPointVector;
-						pointsOnSurface.Add (newPointVector);
-					}
-					incrementalAngle += rotationAngle/steps;//Time.deltaTime;
-				}
-
-				Debug.Log ("allSplinePoints.Count: " + allSplinePoints.Count);
-				Debug.Log ("pointsOnSurface.Count: " + pointsOnSurface.Count);
-
-				// Start drawing traingles
-				gameObject.AddComponent<MeshFilter>();
-				gameObject.AddComponent<MeshRenderer>();
-				Mesh mesh = GetComponent<MeshFilter>().mesh;
-
-				mesh.Clear();
-
-//				// make changes to the Mesh by creating arrays which contain the new values
-//				mesh.vertices = new Vector3[] {new Vector3(0, 0, 0), new Vector3(0, 1, 0), new Vector3(1, 1, 0), new Vector3(1, 0, 0)};
-//				int[] triangles = {0, 1, 2, 2, 3, 0};
-//				mesh.triangles = triangles;
-
-				mesh.vertices = pointsOnSurface.ToArray();
-				List<int> triangles = new List<int>();
-
-				int totalPointOnSlpine = allSplinePoints.Count;
-				int height = 0;
-				while (height < steps) {
-					for (int i = 0; i < totalPointOnSlpine-1; i++) {
-						int index = i + totalPointOnSlpine * height;
-
-						int indexP0 = index;
-						int indexP1 = index + 1;
-						int indexP2 = index + 1 + totalPointOnSlpine;
-						int indexP3 = index + totalPointOnSlpine;
-						// Traingle 1
-						triangles.Add (indexP0);
-						triangles.Add (indexP1);
-						triangles.Add (indexP2);
-
-						// Triangle 2
-						triangles.Add (indexP2);
-						triangles.Add (indexP3);
-						triangles.Add (indexP0);
-					}
-					height += 1;
-				}
-				mesh.triangles = triangles.ToArray ();
-
-			} else {
-				Debug.Log ("Not enough point to draw catmull spline");
-			}
+            count += 1;
 		}
 		// Drawing line when mouse is moving(presses)
 		// The points are pushed each frame
 		if(isMousePressed) {
 			mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			mousePos.z=0;
-			if (!pointsList.Contains (mousePos)) {
-				pointsList.Add (mousePos);
-				line.SetVertexCount (pointsList.Count);
-				line.SetPosition (pointsList.Count - 1, (Vector3)pointsList [pointsList.Count - 1]);
-			}
+            Debug.Log("count: " + count);
+
+            if(count == 0)
+            {
+                startPoint = mousePos;
+            }
+
+            if (count == 1)
+            {
+                endPoint = mousePos;
+            }
+
+            if (count > 1)
+            {
+                middlePoint = mousePos;
+                // check if points lie on the same line
+                if(liesOnTheSameLine())
+                {
+                    Debug.Log("Lies on the same line");
+                }
+                else
+                {
+                    Debug.Log("Do not lie on the same line");
+                }
+
+                pointsList.RemoveRange(0, pointsList.Count);
+
+                pointsList.Add(startPoint);
+
+                for (float t = 0; t <= 1; t += 0.1f)
+                { // only  run the loop till (count - 4) element 
+                    Vector3 pointOnCurve = findPointOnParametricCurve(t);
+                    pointsList.Add(pointOnCurve);
+                    Debug.Log("t: " + t + " -> pointOnCurve: " + pointOnCurve);
+                }
+
+                pointsList.Add(endPoint);
+
+                line.SetVertexCount(pointsList.Count);
+                line.SetPositions(pointsList.ToArray());
+            }
+            Debug.Log("startPoint: " + startPoint + " middlePoint: " + middlePoint + " endPoint: " + endPoint + " a, b, c: " + x + " " + y + " " + " " + z);
 		}
 	}
 
-	void drawCatmullSpline() {
-		LineRenderer lineRenderer = GetComponent<LineRenderer>();
-		lineRenderer.SetPositions(allSplinePoints.ToArray());
-	}
+    Vector3 findPointOnCurve(float t)
+    {
 
-	void addPointsOnCatmullCurve(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3) {
+        Vector3 P1 = startPoint;
+        Vector3 P2 = middlePoint;
+        Vector3 P3 = endPoint;
 
-		float t0 = 0.0f;
-		float t1 = GetT(t0, p0, p1);
-		float t2 = GetT(t1, p1, p2);
-		float t3 = GetT(t2, p2, p3);
+        findConstants();
 
-		float amountOfPoints = numberOfPointsBetweenSplinePoints;
+        // y = A*x^2 + B*x + C
+        float A = x;
+        float B = y;
+        float C = z;
 
-		for(float t=t1; t<t2; t+=((t2-t1)/amountOfPoints))
-		{
-			Vector3 A1 = (t1-t)/(t1-t0)*p0 + (t-t0)/(t1-t0)*p1;
-			Vector3 A2 = (t2-t)/(t2-t1)*p1 + (t-t1)/(t2-t1)*p2;
-			Vector3 A3 = (t3-t)/(t3-t2)*p2 + (t-t2)/(t3-t2)*p3;
+        Vector3 point = new Vector3();
 
-			Vector3 B1 = (t2-t)/(t2-t0)*A1 + (t-t0)/(t2-t0)*A2;
-			Vector3 B2 = (t3-t)/(t3-t1)*A2 + (t-t1)/(t3-t1)*A3;
+        point.x = (P3.x - P2.x) * t + P1.x;
 
-			Vector3 C = (t2-t)/(t2-t1)*B1 + (t-t1)/(t2-t1)*B2;
+        point.y = A * (point.x * point.x) + B * point.x + C;
 
-			allSplinePoints.Add(C);
-		}
-	}
+        point.z = 0;
 
-	Vector3 centerOfCatmullSpline() {
-		Vector3 center = new Vector3 (0.0f, 0.0f, 0.0f);
-		float minX = float.MaxValue;
-		float maxX = float.MinValue;
-		float minY = float.MaxValue;
-		float maxY = float.MinValue;
+        return point;
+    }
 
-		for(int i = 0; i < allSplinePoints.Count; i++) {
-			Vector3 temp = allSplinePoints [i];
-			if (temp.x > maxX) {
-				maxX = temp.x;
-			}
-			if (temp.x < minX) {
-				minX = temp.x;
-			}
-			if (temp.y > maxY) {
-				maxY = temp.y;
-			}
-			if (temp.y < minY) {
-				minY = temp.y;
-			}
-		}
+    void findConstants()
+    {
+        Vector3 P1 = startPoint;
+        Vector3 P2 = middlePoint;
+        Vector3 P3 = endPoint;
 
-		center.x = (minX + maxX) / 2;
-		center.y = (minY + maxY) / 2;
+        a = P1.x * P1.x;
+        b = P1.x;
+        c = 1;
+        d = -P1.y;
 
-		return center;
-	}
+        l = P2.x * P2.x;
+        m = P2.x;
+        n = 1;
+        k = -P2.y;
 
-	void CatmulRom()
-	{
-		newPoints.Clear();
+        p = P3.x * P3.x;
+        q = P3.x;
+        r = 1;
+        s = -P3.y;
 
-		Vector3 p0 = new Vector3(pointsList[0].x, pointsList[0].y, 0.0f);
-		Vector3 p1 = new Vector3(pointsList[1].x, pointsList[1].y, 0.0f);
-		Vector3 p2 = new Vector3(pointsList[2].x, pointsList[2].y, 0.0f);
-		Vector3 p3 = new Vector3(pointsList[3].x, pointsList[3].y, 0.0f);
+        D = (a * m * r + b * p * n + c * l * q) - (a * n * q + b * l * r + c * m * p);
+        x = ((b * r * k + c * m * s + d * n * q) - (b * n * s + c * q * k + d * m * r)) / D;
+        y = ((a * n * s + c * p * k + d * l * r) - (a * r * k + c * l * s + d * n * p)) / D;
+        z = ((a * q * k + b * l * s + d * m * p) - (a * m * s + b * p * k + d * l * q)) / D;
+    }
 
-		float t0 = 0.0f;
-		float t1 = GetT(t0, p0, p1);
-		float t2 = GetT(t1, p1, p2);
-		float t3 = GetT(t2, p2, p3);
+    bool liesOnTheSameLine()
+    {
+        Vector3 A = startPoint;
+        Vector3 B = middlePoint;
+        Vector3 C = endPoint;
 
-		float amountOfPoints = numberOfPointsBetweenSplinePoints;
+        float areaDouble = A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y);
 
-		for(float t=t1; t<t2; t+=((t2-t1)/amountOfPoints))
-		{
-			Vector3 A1 = (t1-t)/(t1-t0)*p0 + (t-t0)/(t1-t0)*p1;
-			Vector3 A2 = (t2-t)/(t2-t1)*p1 + (t-t1)/(t2-t1)*p2;
-			Vector3 A3 = (t3-t)/(t3-t2)*p2 + (t-t2)/(t3-t2)*p3;
+        if(areaDouble == 0)
+        {
+            return true;
+        }
+        return false;
+    }
 
-			Vector3 B1 = (t2-t)/(t2-t0)*A1 + (t-t0)/(t2-t0)*A2;
-			Vector3 B2 = (t3-t)/(t3-t1)*A2 + (t-t1)/(t3-t1)*A3;
 
-			Vector3 C = (t2-t)/(t2-t1)*B1 + (t-t1)/(t2-t1)*B2;
+    Vector3 findPointOnParametricCurve(float t)
+    {
+        Vector3 P0 = startPoint;
+        Vector3 P1 = middlePoint;
+        Vector3 P2 = endPoint;
 
-			newPoints.Add(C);
-		}
-	}
+        Vector3 a0 = P0;
+        Vector3 a2 = -1*(1 / 0.25f) * ((P1 - P0) - 0.5f * (P2 - P0)); //(1 / (2 * t * (t - 1) + 0.5f)) * ((P2 - P0) + 2 * P0);
+        Vector3 a1 = P2 - P0 - a2;
 
-	float GetT(float t, Vector3 p0, Vector3 p1)
-	{
-		float a = Mathf.Pow((p1.x-p0.x), 2.0f) + Mathf.Pow((p1.y-p0.y), 2.0f) + Mathf.Pow((p1.z-p0.z), 2.0f);
-		float b = Mathf.Pow(a, 0.5f);
-		float c = Mathf.Pow(b, alpha);
+        Vector3 point = a2 * (t * t) + a1 * t + a0;
 
-		return (c + t);
-	}
-
-	//Visualize the catmull spline points
-	void OnDrawGizmos()
-	{
-		Gizmos.color = Color.red;
-		foreach(Vector3 temp in allSplinePoints)
-		{
-			Vector3 pos = new Vector3(temp.x, temp.y, 0);
-			Gizmos.DrawSphere(pos, 0.3f);
-		}
-	}
+        return point;
+    }
 }
