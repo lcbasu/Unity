@@ -6,23 +6,29 @@ public class LoadMesh : MonoBehaviour {
 
     string fileName = "SerializedMesh.data";
 
-    void  Start ()
+    bool meshLoaded = false;
+
+    void  Update ()
     {
         Mesh mesh = MeshSerializer.ReadMesh(File.ReadAllBytes(Application.dataPath + "/" + fileName));
-        if (!mesh)
+        if (mesh && !meshLoaded)
         {
-            Debug.Log("Failed to load mesh");
+            Debug.LogError("Mesh loaded");
+            meshLoaded = true;
+            MeshFilter meshFilter = GetComponent<MeshFilter>();
+            if (!meshFilter)
+            {
+                meshFilter = gameObject.AddComponent<MeshFilter>();
+                gameObject.AddComponent<MeshRenderer>();
+                GetComponent<Renderer>().material.color = Color.red;
+            }
+            meshFilter.mesh = mesh;
+        }
+        else if (!mesh)
+        {
+            Debug.LogError("Failed to load mesh");
             return;
         }
-        Debug.Log("Mesh loaded");
-    
-        MeshFilter meshFilter = GetComponent<MeshFilter>();
-        if( !meshFilter ) {
-            meshFilter = gameObject.AddComponent<MeshFilter>();
-            gameObject.AddComponent<MeshRenderer>();
-            GetComponent<Renderer>().material.color = Color.red;
-        }
-        meshFilter.mesh = mesh;
     }
 
 }

@@ -10,6 +10,6 @@ public class SaveMesh : MonoBehaviour {
         Mesh inputMesh= GetComponent<MeshFilter>().mesh;
         string fullFileName= Application.dataPath + "/" + fileName;
         MeshSerializer.WriteMeshToFile(inputMesh, fullFileName, saveTangents);
-        Debug.Log("Saved " + name + " mesh to " + fullFileName );
+        Debug.LogError("Saved " + name + " mesh to " + fullFileName );
     }
 }
