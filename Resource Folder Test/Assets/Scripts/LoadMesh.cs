@@ -4,13 +4,14 @@ using System.IO;
 
 public class LoadMesh : MonoBehaviour {
 
-    string fileName = "SerializedMesh.data";
+    string fileName = "SerializedMesh.asset";
 
     bool meshLoaded = false;
 
     void  Update ()
     {
-        Mesh mesh = MeshSerializer.ReadMesh(File.ReadAllBytes(Application.dataPath + "/" + fileName));
+        string path = Application.dataPath + "/Resources/Meshes/";
+        Mesh mesh = MeshSerializer.ReadMesh(File.ReadAllBytes(path + fileName));
         if (mesh && !meshLoaded)
         {
             Debug.LogError("Mesh loaded");
