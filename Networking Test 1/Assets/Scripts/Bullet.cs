@@ -17,13 +17,12 @@ public class Bullet : MonoBehaviour {
     {
         GameObject hit = collision.gameObject;
 
-        PlayerMove hitPlayer = hit.GetComponent<PlayerMove>();
+        Combat hitCombat = hit.GetComponent<Combat>();
 
-        if (hitPlayer != null)
+        if (hitCombat != null)
         {
-            // Reduce the health of the hit player
-            Combat combat = hit.GetComponent<Combat>();
-            combat.TakeDamage(10);
+            // Reduce the health of the hit combat
+            hitCombat.TakeDamage(10);
 
             Destroy(gameObject);
         }
