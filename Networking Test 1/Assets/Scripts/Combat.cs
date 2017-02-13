@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class Combat : MonoBehaviour {
+public class Combat : NetworkBehaviour {
 
     public const int maxHealth = 100;
+    
+    [SyncVar]
     public int health = maxHealth;
 
 	// Use this for initialization
@@ -18,7 +21,8 @@ public class Combat : MonoBehaviour {
 
     public void TakeDamage(int amount)
     {
-        Debug.Log("Current health: " + health);
+        if (!isServer)
+            return;
 
         health -= amount;
 
