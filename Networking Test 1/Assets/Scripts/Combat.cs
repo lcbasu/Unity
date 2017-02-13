@@ -28,8 +28,20 @@ public class Combat : NetworkBehaviour {
 
         if (health <=0)
         {
-            health = 0;
-            Debug.Log("Dead!");
+            health = maxHealth;
+            
+            // called on the server, will be invoked on the clients
+            RpcRespawn();
+        }
+    }
+
+    [ClientRpc]
+    void RpcRespawn()
+    {
+        if (isLocalPlayer)
+        {
+            // move back to zero location
+            transform.position = Vector3.zero;
         }
     }
 }
