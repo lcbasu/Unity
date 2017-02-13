@@ -8,7 +8,7 @@ public class SaveMesh : MonoBehaviour {
 
     void  Start ()
     {
-        string path = Application.dataPath + "/Resources/Meshes/";
+        string path = "Assets/Resources/Meshes/";
         try
         {
             if (!Directory.Exists(path))

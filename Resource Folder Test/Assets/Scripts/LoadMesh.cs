@@ -10,7 +10,7 @@ public class LoadMesh : MonoBehaviour {
 
     void  Update ()
     {
-        string path = Application.dataPath + "/Resources/Meshes/";
+        string path = "Assets/Resources/Meshes/";
         Mesh mesh = MeshSerializer.ReadMesh(File.ReadAllBytes(path + fileName));
         if (mesh && !meshLoaded)
         {
