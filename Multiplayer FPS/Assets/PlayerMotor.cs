@@ -5,6 +5,7 @@ public class PlayerMotor : MonoBehaviour {
 
     private Vector3 velocity = Vector3.zero;
     private Vector3 rotation = Vector3.zero;
+    private Vector3 cameraRotation = Vector3.zero;
 
     private Rigidbody rb;
 
@@ -23,6 +24,12 @@ public class PlayerMotor : MonoBehaviour {
     public void Rotate(Vector3 rotation)
     {
         this.rotation = rotation;
+    }
+
+    // Gets a camera rotation vector
+    public void RotateCamera(Vector3 cameraRotation)
+    {
+        this.cameraRotation = cameraRotation;
     }
 
     // Runs every physics iteration
@@ -45,6 +52,12 @@ public class PlayerMotor : MonoBehaviour {
     private void PerformRotation()
     {
         rb.MoveRotation(rb.rotation * Quaternion.Euler(rotation));
-    }
 
+        GameObject camGO = GameObject.Find("Camera");
+
+        if (camGO != null)
+        {
+            camGO.GetComponent<Camera>().transform.Rotate(-cameraRotation);
+        }
+    }
 }
